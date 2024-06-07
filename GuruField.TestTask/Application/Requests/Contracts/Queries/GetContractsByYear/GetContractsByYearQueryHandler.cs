@@ -17,19 +17,19 @@ internal sealed class GetContractsByYearQueryHandler : IQueryHandler<GetContract
     public async Task<Result<List<ContractsByYearResponse>>> Handle(GetContractsByYearQuery query, CancellationToken cancellationToken)
     {
         var initialData = await (from company in _applicationDbContext.Companies
-                           join contract in _applicationDbContext.Contracts on company.Id equals contract.ProviderId
-                           join agreement in _applicationDbContext.Agreements on contract.Id equals agreement.ContractId
-                           join wh in _applicationDbContext.WorkHours on agreement.Id equals wh.AgreementId
-                           where wh.Year == query.Year
-                           select new
-                           {
-                               CompanyId = company.Id,
-                               CompanyName = company.Name,
-                               ContractId = contract.Id,
-                               ContractName = contract.Name,
-                               HourlyPrice = agreement.HourlyPrice.Amount,
-                               wh.Month
-                           })
+                                 join contract in _applicationDbContext.Contracts on company.Id equals contract.ProviderId
+                                 join agreement in _applicationDbContext.Agreements on contract.Id equals agreement.ContractId
+                                 join wh in _applicationDbContext.WorkHours on agreement.Id equals wh.AgreementId
+                                 where wh.Year == query.Year
+                                 select new
+                                 {
+                                     CompanyId = company.Id,
+                                     CompanyName = company.Name,
+                                     ContractId = contract.Id,
+                                     ContractName = contract.Name,
+                                     HourlyPrice = agreement.HourlyPrice.Amount,
+                                     wh.Month
+                                 })
                            .ToListAsync(cancellationToken);
 
         var result = initialData.GroupBy(x => new { x.CompanyId, x.CompanyName, x.ContractId, x.ContractName })

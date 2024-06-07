@@ -29,8 +29,8 @@ public class ContractDataGenerator
 
     public List<Contract> GenerateContracts(int fromYear, int toYear, List<Company> providers, List<Company> clients)
     {
-        DateTime fromStart = new DateTime(fromYear, 1, 1);
-        DateTime fromEnd = new DateTime(toYear, 1, 1);
+        DateTime fromStart = new DateTime(fromYear, 1, 1); // 2020
+        DateTime fromEnd = new DateTime(toYear, 1, 1); // 2024
 
         var contractFaker = new Faker<Contract>()
                 .CustomInstantiator((f) =>
@@ -39,8 +39,11 @@ public class ContractDataGenerator
                     var provider = f.PickRandom(clients);
 
                     var activeFrom = DateOnly.FromDateTime(f.Date.Between(fromStart, fromEnd));
-                    var additionalDays = f.Random.Int(10, 100);
-                    var activeTo = activeFrom.AddDays(365 + additionalDays);
+                    var activeTo = activeFrom.AddDays(new Random().Next(10, 365 * 3));
+                    if (activeTo > DateOnly.FromDateTime(fromEnd))
+                    {
+                        activeTo = DateOnly.FromDateTime(fromEnd);
+                    }
 
                     return Contract.Create(
                         client.Id,
@@ -52,7 +55,7 @@ public class ContractDataGenerator
                 })
                 .RuleFor(c => c.State, f => f.PickRandom<ContractState>());
 
-        return contractFaker.GenerateBetween(1, 1);
+        return contractFaker.GenerateBetween(1, 2);
     }
 
     public List<Agreement> GenerateAgreements(List<Contract> contracts)
@@ -65,8 +68,8 @@ public class ContractDataGenerator
         {
             DateOnly startDate = contract.ActiveFrom;
 
-            var endDate = contract.ActiveTo ?? DateOnly.FromDateTime(DateTime.Now.Date);
-
+            var endDate = contract.ActiveTo ?? DateOnly.FromDateTime(DateTime.UtcNow);
+            int max = 0;
             do
             {
                 var agreementFaker = new Faker<Agreement>()
@@ -83,9 +86,10 @@ public class ContractDataGenerator
                      return agreement;
                  });
 
+                max++;
                 result.AddRange(agreementFaker.Generate(1));
 
-            } while (startDate < endDate);
+            } while (startDate < endDate && max <= 3);
         }
 
         return result;
@@ -93,29 +97,89 @@ public class ContractDataGenerator
 
     public List<WorkHour> GenerateWorkHours(List<Agreement> agreements)
     {
-        var aSorted = agreements.OrderBy(a => a.StartDate).ToList();
         var result = new List<WorkHour>();
 
-        var count = aSorted.Count;
+        var groped = agreements.GroupBy(x => x.Contract).ToList();
 
-        if (count > 0)
+        foreach (var group in groped)
         {
-            var year = aSorted[0].StartDate.Year;
-            var month = aSorted[0].StartDate.Month;
-            var wh = WorkHour.Create(aSorted[0].Id, new Random().Next(8, 24), year, month);
-            result.Add(wh);
+            var aSorted = group.OrderBy(a => a.StartDate).ToList();
 
-            if (count > 1)
+            var random = new Random();
+
+            for (int i = 0; i < aSorted.Count; i++)
             {
-                year = aSorted[1].StartDate.Year;
-                month = aSorted[1].StartDate.Month;
-                var wh2 = WorkHour.Create(aSorted[1].Id, new Random().Next(8, 24), year, month);
+                var currentAgreement = aSorted[i];
+                var currentStartDate = currentAgreement.StartDate; // 05.01.2021
+                var nextStartDate = (i + 1 < aSorted.Count) ?
+                    aSorted[i + 1].StartDate :
+                    DateOnly.FromDateTime(group.Key.ActiveTo.HasValue ? group.Key.ActiveTo.Value.ToDateTime(TimeOnly.MinValue) : DateTime.UtcNow);
 
-                result.Add(wh2);
+                var dates = GetDatesBetween(currentStartDate, nextStartDate);
+
+                foreach (var date in dates)
+                {
+                    int currentYear = date.Year;
+                    int currentMonth = date.Month;
+
+                    var workHour = WorkHour.Create(currentAgreement.Id, random.Next(8, 24), currentYear, currentMonth);
+                    result.Add(workHour);
+                }
             }
-
         }
 
         return result;
     }
+
+    public static List<DateOnly> GetDatesBetween(DateOnly startDate, DateOnly endDate)
+    {
+        var months = new List<DateOnly>();
+
+        int currentYear = startDate.Year;
+        int currentMonth = startDate.Month;
+
+        while (new DateOnly(currentYear, currentMonth, 1) < endDate)
+        {
+            months.Add(new DateOnly(currentYear, currentMonth, 1));
+
+            currentMonth++;
+            if (currentMonth > 12)
+            {
+                currentMonth = 1;
+                currentYear++;
+            }
+        }
+
+        return months;
+    }
+
+
+
+    //public List<WorkHour> GenerateWorkHours(List<Agreement> agreements)
+    //{
+    //    var aSorted = agreements.OrderBy(a => a.StartDate).ToList();
+    //    var result = new List<WorkHour>();
+
+    //    var count = aSorted.Count;
+
+    //    if (count > 0)
+    //    {
+    //        var year = aSorted[0].StartDate.Year;
+    //        var month = aSorted[0].StartDate.Month;
+    //        var wh = WorkHour.Create(aSorted[0].Id, new Random().Next(8, 24), year, month);
+    //        result.Add(wh);
+
+    //        if (count > 1)
+    //        {
+    //            year = aSorted[1].StartDate.Year;
+    //            month = aSorted[1].StartDate.Month;
+    //            var wh2 = WorkHour.Create(aSorted[1].Id, new Random().Next(8, 24), year, month);
+
+    //            result.Add(wh2);
+    //        }
+
+    //    }
+
+    //    return result;
+    //}
 }

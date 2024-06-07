@@ -29,8 +29,8 @@ public class ContractDataGenerator
 
     public List<Contract> GenerateContracts(int fromYear, int toYear, List<Company> providers, List<Company> clients)
     {
-        DateTime fromStart = new DateTime(fromYear, 1, 1); // 2020
-        DateTime fromEnd = new DateTime(toYear, 1, 1); // 2024
+        DateTime fromStart = new DateTime(fromYear, 1, 1); 
+        DateTime fromEnd = new DateTime(toYear, 1, 1);
 
         var contractFaker = new Faker<Contract>()
                 .CustomInstantiator((f) =>
@@ -110,7 +110,7 @@ public class ContractDataGenerator
             for (int i = 0; i < aSorted.Count; i++)
             {
                 var currentAgreement = aSorted[i];
-                var currentStartDate = currentAgreement.StartDate; // 05.01.2021
+                var currentStartDate = currentAgreement.StartDate;
                 var nextStartDate = (i + 1 < aSorted.Count) ?
                     aSorted[i + 1].StartDate :
                     DateOnly.FromDateTime(group.Key.ActiveTo.HasValue ? group.Key.ActiveTo.Value.ToDateTime(TimeOnly.MinValue) : DateTime.UtcNow);
@@ -131,7 +131,7 @@ public class ContractDataGenerator
         return result;
     }
 
-    public static List<DateOnly> GetDatesBetween(DateOnly startDate, DateOnly endDate)
+    private static List<DateOnly> GetDatesBetween(DateOnly startDate, DateOnly endDate)
     {
         var months = new List<DateOnly>();
 
@@ -152,34 +152,4 @@ public class ContractDataGenerator
 
         return months;
     }
-
-
-
-    //public List<WorkHour> GenerateWorkHours(List<Agreement> agreements)
-    //{
-    //    var aSorted = agreements.OrderBy(a => a.StartDate).ToList();
-    //    var result = new List<WorkHour>();
-
-    //    var count = aSorted.Count;
-
-    //    if (count > 0)
-    //    {
-    //        var year = aSorted[0].StartDate.Year;
-    //        var month = aSorted[0].StartDate.Month;
-    //        var wh = WorkHour.Create(aSorted[0].Id, new Random().Next(8, 24), year, month);
-    //        result.Add(wh);
-
-    //        if (count > 1)
-    //        {
-    //            year = aSorted[1].StartDate.Year;
-    //            month = aSorted[1].StartDate.Month;
-    //            var wh2 = WorkHour.Create(aSorted[1].Id, new Random().Next(8, 24), year, month);
-
-    //            result.Add(wh2);
-    //        }
-
-    //    }
-
-    //    return result;
-    //}
 }

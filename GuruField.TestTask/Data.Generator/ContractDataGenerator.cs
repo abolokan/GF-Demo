@@ -55,7 +55,7 @@ public class ContractDataGenerator
                 })
                 .RuleFor(c => c.State, f => f.PickRandom<ContractState>());
 
-        return contractFaker.GenerateBetween(1, 2);
+        return contractFaker.GenerateBetween(1, 3);
     }
 
     public List<Agreement> GenerateAgreements(List<Contract> contracts)

@@ -1,0 +1,46 @@
+.App {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+
+.year-selector {
+  margin: 20px 0;
+  display: flex;
+  align-items: center;
+}
+
+.year-selector label {
+  font-size: 16px;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.year-selector select {
+  padding: 5px 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  transition: border-color 0.3s;
+}
+
+.year-selector select:hover {
+  border-color: #888;
+}
+

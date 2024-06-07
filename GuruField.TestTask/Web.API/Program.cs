@@ -24,6 +24,17 @@ public class Program
         builder.Services.AddApplication();
         builder.Services.AddInfrastructure();
 
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("AllowSpecificOrigin",
+                builder =>
+                {
+                    builder.WithOrigins("http://localhost:3000")
+                           .AllowAnyHeader()
+                           .AllowAnyMethod();
+                });
+        });
+
         // Add services to the container.
 
         builder.Services.AddControllers();
@@ -31,6 +42,8 @@ public class Program
         builder.Services.AddSwaggerGen();
 
         var app = builder.Build();
+
+        app.UseCors("AllowSpecificOrigin");
 
         // Configure the HTTP request pipeline.
 

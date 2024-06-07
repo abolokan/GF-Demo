@@ -27,6 +27,7 @@ internal sealed class GetContractsByYearQueryHandler : IQueryHandler<GetContract
                                      CompanyName = company.Name,
                                      ContractId = contract.Id,
                                      ContractName = contract.Name,
+                                     StartDateAgreement = agreement.StartDate,
                                      HourlyPrice = agreement.HourlyPrice.Amount,
                                      wh.Month
                                  })
@@ -38,8 +39,11 @@ internal sealed class GetContractsByYearQueryHandler : IQueryHandler<GetContract
                               grouped.Key.CompanyName,
                               grouped.Key.ContractId,
                               grouped.Key.ContractName,
-                              [.. grouped.Select(a => new HourlyPrice(a.HourlyPrice, a.Month)).OrderBy(x => x.Month)]
-                          )).ToList();
+                              [.. grouped.Select(a => new HourlyPrice(a.StartDateAgreement, a.HourlyPrice, a.Month)).OrderBy(x => x.StartDateAgreement)]
+                          ))
+                          .OrderBy(x => x.CompanyName)
+                          .ThenBy(x => x.ContractName)
+                          .ToList();
 
         return result;
     }

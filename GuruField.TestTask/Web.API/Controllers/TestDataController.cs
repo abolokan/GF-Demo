@@ -15,27 +15,28 @@ public class TestDataController : ApiController
         _appDbContext = appDbContext;
     }
 
-    [HttpPost("generate")]
-    public async Task<IActionResult> GenerateAsync(CancellationToken cancellationToken)
+    [HttpPost("generate/{fromYear}/{toYear}")]
+    public async Task<IActionResult> GenerateAsync(int fromYear, int toYear, CancellationToken cancellationToken)
     {
-        var providers = ContractDataGenerator.GenerateCompanies([], 5);
-        var clients = ContractDataGenerator.GenerateCompanies(providers.Select(x => x.Code).ToHashSet(), 5);
+        var generator = new ContractDataGenerator();
+        var providers = generator.GenerateCompanies([], 5);
+        var clients = generator.GenerateCompanies(providers.Select(x => x.Code).ToHashSet(), 5);
 
         await _appDbContext.Companies.AddRangeAsync(providers, cancellationToken);
         await _appDbContext.Companies.AddRangeAsync(clients, cancellationToken);
         await _appDbContext.SaveChangesAsync(cancellationToken);
 
-        var contracts = ContractDataGenerator.GenerateContracts(providers, clients);
+        var contracts = generator.GenerateContracts(fromYear, toYear, providers, clients);
 
         await _appDbContext.Contracts.AddRangeAsync(contracts, cancellationToken);
         await _appDbContext.SaveChangesAsync(cancellationToken);
 
-        var agreements = ContractDataGenerator.GenerateAgreements(contracts);
+        var agreements = generator.GenerateAgreements(contracts);
 
         await _appDbContext.Agreements.AddRangeAsync(agreements, cancellationToken);
         await _appDbContext.SaveChangesAsync(cancellationToken);
 
-        var workHours = ContractDataGenerator.GenerateWorkHours(agreements);
+        var workHours = generator.GenerateWorkHours(agreements);
 
         await _appDbContext.WorkHours.AddRangeAsync(workHours, cancellationToken);
         await _appDbContext.SaveChangesAsync(cancellationToken);

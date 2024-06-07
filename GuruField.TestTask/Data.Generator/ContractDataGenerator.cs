@@ -6,15 +6,7 @@ namespace Data.Generator;
 
 public class ContractDataGenerator
 {
-    private static DateTime fromStart = new DateTime(2020, 1, 1);
-    private static DateTime fromEnd = new DateTime(2024, 1, 1);
-
-    private ContractDataGenerator()
-    {
-
-    }
-
-    public static List<Company> GenerateCompanies(HashSet<string> usedSuffixes, int companyCount = 5)
+    public List<Company> GenerateCompanies(HashSet<string> usedSuffixes, int companyCount = 5)
     {
         var companyFaker = new Faker<Company>()
         .CustomInstantiator(f =>
@@ -35,32 +27,35 @@ public class ContractDataGenerator
         return companyFaker.Generate(companyCount);
     }
 
-    public static List<Contract> GenerateContracts(List<Company> providers, List<Company> clients)
+    public List<Contract> GenerateContracts(int fromYear, int toYear, List<Company> providers, List<Company> clients)
     {
+        DateTime fromStart = new DateTime(fromYear, 1, 1);
+        DateTime fromEnd = new DateTime(toYear, 1, 1);
+
         var contractFaker = new Faker<Contract>()
-            .CustomInstantiator((f) =>
-            {
-                var client = f.PickRandom(providers);
-                var provider = f.PickRandom(clients);
+                .CustomInstantiator((f) =>
+                {
+                    var client = f.PickRandom(providers);
+                    var provider = f.PickRandom(clients);
 
-                var activeFrom = DateOnly.FromDateTime(f.Date.Between(fromStart, fromEnd));
-                var additionalDays = f.Random.Int(10, 100);
-                var activeTo = activeFrom.AddDays(365 + additionalDays);
+                    var activeFrom = DateOnly.FromDateTime(f.Date.Between(fromStart, fromEnd));
+                    var additionalDays = f.Random.Int(10, 100);
+                    var activeTo = activeFrom.AddDays(365 + additionalDays);
 
-                return Contract.Create(
-                    client.Id,
-                    provider.Id,
-                    f.Company.CatchPhrase(),
-                    activeFrom,
-                    f.Random.Bool() ? activeTo : null
-                );
-            })
-            .RuleFor(c => c.State, f => f.PickRandom<ContractState>());
+                    return Contract.Create(
+                        client.Id,
+                        provider.Id,
+                        f.Company.CatchPhrase(),
+                        activeFrom,
+                        f.Random.Bool() ? activeTo : null
+                    );
+                })
+                .RuleFor(c => c.State, f => f.PickRandom<ContractState>());
 
         return contractFaker.GenerateBetween(1, 1);
     }
 
-    public static List<Agreement> GenerateAgreements(List<Contract> contracts)
+    public List<Agreement> GenerateAgreements(List<Contract> contracts)
     {
         var result = new List<Agreement>();
 
@@ -96,7 +91,7 @@ public class ContractDataGenerator
         return result;
     }
 
-    public static List<WorkHour> GenerateWorkHours(List<Agreement> agreements)
+    public List<WorkHour> GenerateWorkHours(List<Agreement> agreements)
     {
         var aSorted = agreements.OrderBy(a => a.StartDate).ToList();
         var result = new List<WorkHour>();

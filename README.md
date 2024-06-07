@@ -47,7 +47,7 @@ This guide outlines the steps to set up the project, apply database migrations, 
     ```
     Replace `{year}` with any year between `{fromYear}` and `{toYear}` specified in Step 5.
 	
-### Step 7: Run company-contracts ReactJs '' and open http://localhost:3000/ 
+### Step 7: Run company-contracts ReactJs application 
 1. Run the `Web.API` project.
     ```
     npm start

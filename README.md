@@ -46,6 +46,8 @@ This guide outlines the steps to set up the project, apply database migrations, 
     GET https://localhost:7075/contracts/{year}
     ```
     Replace `{year}` with any year between `{fromYear}` and `{toYear}` specified in Step 5.
+	
+### Step 7: Run company-contracts ReactJs 'npm start' and open http://localhost:3000/ 
 
 ## SQL Scripts to Verify Data
 

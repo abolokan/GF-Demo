@@ -3,7 +3,7 @@ using Application.Abstractions.Messaging;
 using Microsoft.EntityFrameworkCore;
 using Shared;
 
-namespace Application.Requests.Members.Queries.GetMemberById;
+namespace Application.Requests.Contracts.Queries.GetContractsByYear;
 
 internal sealed class GetContractsByYearQueryHandler : IQueryHandler<GetContractsByYearQuery, List<ContractsByYearResponse>>
 {

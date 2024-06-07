@@ -1,4 +1,4 @@
-using Application.Requests.Members.Queries.GetMemberById;
+using Application.Requests.Contracts.Queries.GetContractsByYear;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

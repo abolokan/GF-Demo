@@ -39,7 +39,7 @@ public class AnimalGenerator
         var predatorFaker = new Faker<Animal>()
             .CustomInstantiator(f =>
             {
-                var name = $"{f.Hacker.Adjective} {f.PickRandom(AnimalNames)}";
+                var name = $"{f.Hacker.Adjective()} {f.PickRandom(AnimalNames)}";
                 return Animal.Create(name);
             });
 

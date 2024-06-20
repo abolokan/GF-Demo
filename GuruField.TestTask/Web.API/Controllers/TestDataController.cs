@@ -49,7 +49,7 @@ public class TestDataController : ApiController
     public async Task<IActionResult> GenerateAnimalsAsync(int count, CancellationToken cancellationToken)
     {
         var generator = new AnimalGenerator();
-        var animals = generator.GenerateAnimals();
+        var animals = generator.GenerateAnimals(count);
 
         await _appDbContext.Animals.AddRangeAsync(animals, cancellationToken);
         await _appDbContext.SaveChangesAsync(cancellationToken);

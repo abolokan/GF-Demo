@@ -14,11 +14,11 @@ internal class HumanConfiguration : IEntityTypeConfiguration<Human>
         builder.HasIndex(x => x.Name).IsUnique();
 
         builder.HasOne(x => x.LeastFavoriteAnimal)
-            .WithMany(x => x.Humans)
+            .WithMany(x => x.HumansWithLeastFavoritAnimals)
             .HasForeignKey(x => x.LeastFavoriteAnimalId);
 
         builder.HasOne(x => x.MostFavoriteAnimal)
-            .WithMany(x => x.Humans)
+            .WithMany(x => x.HumansWithMostFavoritAnimals)
             .HasForeignKey(x => x.MostFavoriteAnimalId);
     }
 }

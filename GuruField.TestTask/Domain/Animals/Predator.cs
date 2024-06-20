@@ -4,7 +4,8 @@ public class Predator : Entity
 {
     internal Predator(Guid id, Guid predatorId, Guid preyId) : base(id)
     {
-
+        PredatorId = predatorId;
+        FavoritePreyId = preyId;
     }
 
     private Predator() { }

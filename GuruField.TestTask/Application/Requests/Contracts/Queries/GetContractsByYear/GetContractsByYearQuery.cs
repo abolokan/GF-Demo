@@ -2,4 +2,4 @@
 
 namespace Application.Requests.Contracts.Queries.GetContractsByYear;
 
-public sealed record class GetContractsByYearQuery(int Year) : IQuery<List<ContractsByYearResponse>>;
+public sealed record GetContractsByYearQuery(int Year) : IQuery<List<ContractsByYearResponse>>;

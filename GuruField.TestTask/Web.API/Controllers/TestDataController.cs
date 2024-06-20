@@ -16,7 +16,7 @@ public class TestDataController : ApiController
     }
 
     [HttpPost("generate/{fromYear}/{toYear}")]
-    public async Task<IActionResult> GenerateAsync(int fromYear, int toYear, CancellationToken cancellationToken)
+    public async Task<IActionResult> GenerateContractsAsync(int fromYear, int toYear, CancellationToken cancellationToken)
     {
         var generator = new ContractDataGenerator();
         var providers = generator.GenerateCompanies([], 5);
@@ -42,5 +42,30 @@ public class TestDataController : ApiController
         await _appDbContext.SaveChangesAsync(cancellationToken);
 
         return Ok();
+    }
+
+
+    [HttpPost("generate/animals/{count}")]
+    public async Task<IActionResult> GenerateAnimalsAsync(int count, CancellationToken cancellationToken)
+    {
+        var generator = new AnimalGenerator();
+        var animals = generator.GenerateAnimals();
+
+        await _appDbContext.Animals.AddRangeAsync(animals, cancellationToken);
+        await _appDbContext.SaveChangesAsync(cancellationToken);
+
+        return Ok(animals);
+    }
+
+    [HttpPost("generate/humans/{count}")]
+    public async Task<IActionResult> GenerateHumansAsync(int count, CancellationToken cancellationToken)
+    {
+        var generator = new HumanGenerator();
+        var humans = generator.GenerateHumans(count);
+
+        await _appDbContext.Humans.AddRangeAsync(humans, cancellationToken);
+        await _appDbContext.SaveChangesAsync(cancellationToken);
+
+        return Ok(humans);
     }
 }
